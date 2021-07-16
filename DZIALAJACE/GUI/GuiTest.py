@@ -3,7 +3,7 @@ import PySimpleGUI as sg
 sg.theme('DarkAmber')   # Add a touch of color
 # All the stuff inside your window.
 layout = [  [sg.Text('Obecna pozycja robota')],
-            [sg.Text('X'), sg.Text(size=(40,1), key='X')],
+            [sg.Text('B'), sg.Text(size=(40,1), key='X')],
             [sg.Text('Y'), sg.Text(size=(40,1), key='Y')],
             [sg.Text('Z'), sg.Text(size=(40,1), key='Z')],
             [sg.Text('Docelowa pozycja')],
