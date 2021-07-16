@@ -24,10 +24,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         #Glowna petla programu
         while True:
             data=conn.recv(126)    #otrzymanie wiadomosci od Karela
-            print(data)   #wypisanie otrzymanej wiadomosci
-            print('Dlugosc data:', len(data))
+            print('Otrzymano: ',data)   #wypisanie otrzymanej wiadomosci
 
-            out_str=input("Enter message: ")      #wpisanie polecenia z klawiatury     
+
+            out_str=input("Wpisz wiadomosc: ")      #wpisanie polecenia z klawiatury     
             out_str=out_str + (126-len(out_str))*' '    #formatowanie wiadomosci do dlugosci jakiej oczekuje karel
             out_byt=bytes(out_str,'utf-8')  #zakodowanie wiadomosci na bity
             conn.send(out_byt)  #wiadomosc wysylana do Karela
@@ -45,6 +45,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     out_str=out_str+s+(9-len(s))*' '
                 out_str=out_str + (126-len(out_str))*' '    #formatowanie wiadomosci do dlugosci jakiej oczekuje karel
                 out_byt=bytes(out_str,'utf-8')  #zakodowanie wiadomosci na bity
+                print('Wysylam: ',out_byt)
                 conn.send(out_byt)  #wiadomosc wysylana do Karela
 
             message = str(data) + '\n'  #formatowanie do pliku z nastepna linia

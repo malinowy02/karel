@@ -34,6 +34,7 @@ VAR     --variables declaration with types
 	loop1,          --uzywane do petli
 	loop2	 : BOOLEAN
 
+
 ROUTINE ustaw_screen
 BEGIN
     WRITE(CHR(137),CHR(128)); -- Clear the TP USER menu screen
@@ -56,22 +57,38 @@ BEGIN
     RETURN(str_r)   --zwrocenie wartosci
 END pos_string
 
-ROUTINE STOREPOS (reg_id : INTEGER)
+ROUTINE pos_store (reg_id : INTEGER; xyz3_loc: XYZWPR)
 BEGIN
-	xyz = CURPOS(0,0) -- Get the current position
-	SET_POS_REG(reg_id , xyz, STATUS)
-END STOREPOS
+	SET_POS_REG(reg_id , xyz3_loc, STATUS)
+END pos_store
 
 ROUTINE pos_new (x,y,z,w,p,r :REAL) :XYZWPR
+VAR
+xyz_loc :XYZWPR
 BEGIN
-	xyz.x=x
-	xyz.y=y
-	xyz.z=z
-	xyz.w=w
-	xyz.p=p
-	xyz.r=r
-	RETURN(xyz)
+	xyz_loc.x=x
+	xyz_loc.y=y
+	xyz_loc.z=z
+	xyz_loc.w=w
+	xyz_loc.p=p
+	xyz_loc.r=r
+	RETURN(xyz_loc)
 END pos_new
+
+ROUTINE decode( in_s :STRING)	:XYZWPR
+VAR
+	xyz2_loc: XYZWPR
+	ar_l :ARRAY[6] OF REAL
+	i_loc :INTEGER
+BEGIN
+	FOR i_loc=0 TO 5 DO
+		new_str=SUB_STR(in_s,1+i_loc*8,8)
+		CNV_STR_REAL(new_str,r_val)
+		ar_l[i_loc+1]=r_val
+	ENDFOR
+	xyz2_loc = pos_new(ar_l[1],ar_l[2],ar_l[3],ar_l[4],ar_l[5],ar_l[6])
+	RETURN(xyz2_loc)
+END decode
 
 -------------------------GLOWNA PETLA PROGRAMU------------------------------------------
 BEGIN
@@ -106,6 +123,11 @@ BEGIN
 						ENDIF
 						IF new_str='p' THEN
 							READ file_var(tmp_str::126)
+							WRITE('Read: ',tmp_str,CR)
+							xyz=decode(tmp_str)
+							pos_store(3,xyz)
+
+
 						ENDIF
 					ENDWHILE
 					loop1 = FALSE
