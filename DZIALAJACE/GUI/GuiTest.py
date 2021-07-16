@@ -3,15 +3,17 @@ import PySimpleGUI as sg
 sg.theme('DarkAmber')   # Add a touch of color
 # All the stuff inside your window.
 layout = [  [sg.Text('Obecna pozycja robota')],
-            [sg.Text('B'), sg.Text(size=(40,1), key='X')],
+            [sg.Text('X'), sg.Text(size=(40,1), key='X')],
             [sg.Text('Y'), sg.Text(size=(40,1), key='Y')],
             [sg.Text('Z'), sg.Text(size=(40,1), key='Z')],
             [sg.Text('Docelowa pozycja')],
-            [sg.Text('X'), sg.InputText()],
-            [sg.Text('Y'), sg.InputText()],
-            [sg.Text('Z'), sg.InputText()],
+            [sg.Text('X'), sg.Input()],
+            [sg.Text('Y'), sg.Input()],
+            [sg.Text('Z'), sg.Input()],
+            [sg.Checkbox('Checkbox', default=True, k='-CB-')],
             [sg.Text('Enter something on Row 2'), sg.InputText()],
-            [sg.Button('Ok'), sg.Button('Quit')] ]
+            [sg.Button('Ok'), sg.Button('Quit')] 
+            ]
 
 # Create the Window
 window = sg.Window('Fanuc TCP', layout)
