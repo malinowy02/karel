@@ -16,11 +16,10 @@ PROGRAM A_String
 %INCLUDE klevkeys
 %INCLUDE klevkmsk
 
-
 VAR     --variables declaration with types
 	file_var : FILE         --do utworzenia pliku przesylu   
 	tmp_str  : STRING[126]  --do wysylania stringa
-	new_str : STRING[5]
+	new_str : STRING[9]
     xyz :XYZWPR     --przechowuje pozycje
 	entry,          --do ustawienia portu automatycznie
     tmp_int,        --do licznika w petli
@@ -55,6 +54,17 @@ BEGIN
     RETURN(str_r)   --zwrocenie wartosci
 END pos_string
 
+ROUTINE pos_new (x,y,z,w,p,r :REAL) :XYZWPR
+BEGIN
+	xyz.x=x
+	xyz.y=y
+	xyz.z=z
+	xyz.w=w
+	xyz.p=p
+	xyz.r=r
+	RETURN(xyz)
+END pos_new
+
 -------------------------GLOWNA PETLA PROGRAMU------------------------------------------
 BEGIN
 	ustaw_screen
@@ -69,6 +79,29 @@ BEGIN
 	ELSE
 		WRITE('NIESPELNIONY',CR)
 	ENDIF
+
+
+	WRITE('Pozycja:',xyz,CR)
+	tmp_str = pos_string
+	WRITE('String:',tmp_str,CR)
+	new_str= SUB_STR(tmp_str,2,8)
+	WRITE('Nowy:',new_strr,CR)
+	new_str= SUB_STR(tmp_str,10,8)
+	WRITE('Nowy:',new_strr,CR)
+	new_str= SUB_STR(tmp_str,18,8)
+	WRITE('Nowy:',new_strr,CR)
+	new_str= SUB_STR(tmp_str,26,8)
+	WRITE('Nowy:',new_strr,CR)
+	new_str= SUB_STR(tmp_str,34,8)
+	WRITE('Nowy:',new_strr,CR)
+	new_str= SUB_STR(tmp_str,42,8)
+	WRITE('Nowy:',new_strr,CR)
+	new_str= SUB_STR(tmp_str,50,8)
+	WRITE('Nowy:',new_strr,CR)
+
+	xyz = pos_new(50,40,20.8,-170,-65.123,15)
+	WRITE('Nowa pozycja:',xyz, CR)
+
 
 END A_String
 

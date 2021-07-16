@@ -19,8 +19,9 @@ PROGRAM A_COM
 
 VAR     --variables declaration with types
 	file_var : FILE         --do utworzenia pliku przesylu  
-	new_str	: STRING[5]
+	new_str	: STRING[9]
 	tmp_str  : STRING[126]  --do wysylania stringa
+	tmp_real : REAL
     xyz :XYZWPR     --przechowuje pozycje
 	entry,          --do ustawienia portu automatycznie
     tmp_int,        --do licznika w petli
@@ -56,11 +57,21 @@ BEGIN
 END pos_string
 
 ROUTINE STOREPOS (reg_id : INTEGER)
-
 BEGIN
 	xyz = CURPOS(0,0) -- Get the current position
 	SET_POS_REG(reg_id , xyz, STATUS)
 END STOREPOS
+
+ROUTINE pos_new (x,y,z,w,p,r :REAL) :XYZWPR
+BEGIN
+	xyz.x=x
+	xyz.y=y
+	xyz.z=z
+	xyz.w=w
+	xyz.p=p
+	xyz.r=r
+	RETURN(xyz)
+END pos_new
 
 -------------------------GLOWNA PETLA PROGRAMU------------------------------------------
 BEGIN
@@ -90,9 +101,11 @@ BEGIN
 						READ file_var(tmp_str::126)	--Odczytanie stringa zwrotnego
 						WRITE('Read: ',tmp_str,CR)
 						new_str= SUB_STR(tmp_str,1,1) --sprawdzenie pierwszej cyfry wiadomosci
-						ENDIF
 						IF new_str ='0' THEN
 							loop2=FALSE
+						ENDIF
+						IF new_str='p' THEN
+							READ file_var(tmp_str::126)
 						ENDIF
 					ENDWHILE
 					loop1 = FALSE
