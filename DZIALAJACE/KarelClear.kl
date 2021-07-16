@@ -80,8 +80,6 @@ BEGIN
 				OPEN FILE file_var('rw','C1:')  -- Syntax : OPEN FILE file_var ( usage_string, file_string). Tutaj otwarcie pliku oznacza komunikacje z serwerem i wysylanie/otrzymywanie komunikatow
 				STATUS = IO_STATUS(file_var)    -- Use the IO_STATUS built-in function to verify if the open file operation was successful
 				IF STATUS = 0 THEN
-					---------------------------------------------------------------------------------------------
-					---------------------------------------------------------------------------------------------
 					loop2 = TRUE
 					tmp_int = 0
 					WHILE loop2 = TRUE DO	--wyslanie pozycji 5 razy
@@ -94,7 +92,6 @@ BEGIN
 							loop2 = FALSE
 						ENDIF
 					ENDWHILE
-
 
 					WRITE('Waiting to read from server...')
 					READ file_var(tmp_str::126)	--Odczytanie stringa zwrotnego (ostatni wyslany)
@@ -111,8 +108,6 @@ BEGIN
 				ENDIF						
 			ENDWHILE
 		ENDIF
-	WRITE('Closed file.',CR)
-	CLOSE FILE file_var
 	MSG_DISCO('C1:',STATUS)
 	WRITE('Disconnect status=',STATUS,CR)
 END A_KLI
