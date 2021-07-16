@@ -42,11 +42,9 @@ VAR     --variables declaration with types
 
 
 ROUTINE ustaw_screen
-
 BEGIN
     WRITE(CHR(137),CHR(128)); -- Clear the TP USER menu screen
 	FORCE_SPMENU(TP_PANEL,SPI_TPUSER,1) -- Force the TP USER menu to be visible
-
 END ustaw_screen
 
 
@@ -76,7 +74,7 @@ BEGIN
 	SET_POS_REG(reg_id , pos_r, stat)
 END STOREPOS
 
-
+-------------------------GLOWNA PETLA PROGRAMU------------------------------------------
 BEGIN
 	ustaw_screen
 	
