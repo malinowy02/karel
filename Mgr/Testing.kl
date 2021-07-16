@@ -1,0 +1,53 @@
+PROGRAM ATestVal
+
+%STACKSIZE = 4000
+%NOLOCKGROUP
+%NOPAUSE=ERROR+COMMAND+TPENABLE
+%ENVIRONMENT uif
+%ENVIRONMENT sysdef
+%ENVIRONMENT kclop
+%ENVIRONMENT bynam
+%ENVIRONMENT fdev
+%ENVIRONMENT flbt
+%ENVIRONMENT STRNG
+%INCLUDE KLIOTYPS 
+%INCLUDE klevccdf
+%INCLUDE klevkeys
+%INCLUDE klevkmsk
+
+
+VAR     --variables declaration with types
+	xyz		 : XYZWPR -- position format data
+	file_var : FILE
+	tmp_int	 : INTEGER
+	tmp_str  : STRING[126]
+	status	 : INTEGER
+	entry	 : INTEGER
+	loop1	 : BOOLEAN
+    pr_cases :STRING[6]
+    cases   :INTEGER
+    ary_tmp :ARRAY[6] OF STRING[10]
+    
+
+BEGIN
+	write(chr(137),chr(128)); -- Clear the TP USER menu screen
+	FORCE_SPMENU(TP_PANEL,SPI_TPUSER,1) -- Force the TP USER menu to be visible
+
+    xyz = CURPOS(0,0)
+    WRITE('Position is: ',xyz, cr)
+    --WRITE('X position ',xyz.x, cr)
+    CNV_REAL_STR(xyz.x, 2, 3, ary_tmp[1])
+    CNV_REAL_STR(xyz.y, 2, 3, ary_tmp[2])
+    CNV_REAL_STR(xyz.z, 2, 3, ary_tmp[3])
+    CNV_REAL_STR(xyz.w, 2, 3, ary_tmp[4])
+    CNV_REAL_STR(xyz.p, 2, 3, ary_tmp[5])
+    CNV_REAL_STR(xyz.r, 2, 3, ary_tmp[6])
+    tmp_str = ary_tmp[1] + ary_tmp[2] + ary_tmp[3] + ary_tmp[4] + ary_tmp[5] + ary_tmp[6]
+    WRITE('String: ', tmp_str, cr)
+    --WRITE('String: ', ary_tmp[1],ary_tmp[2], ary_tmp[3], cr)
+    --WRITE(ary_tmp[4],ary_tmp[5], ary_tmp[6], cr)
+
+
+					
+END ATestVal
+

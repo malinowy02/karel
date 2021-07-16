@@ -1,0 +1,75 @@
+PROGRAM A_RUCH
+%STACKSIZE = 4000
+%NOLOCKGROUP
+%NOPAUSE=ERROR+COMMAND+TPENABLE
+%ENVIRONMENT uif
+%ENVIRONMENT sysdef
+%ENVIRONMENT kclop
+%ENVIRONMENT bynam
+%ENVIRONMENT fdev
+%ENVIRONMENT flbt
+%ENVIRONMENT STRNG
+%ENVIRONMENT TIM
+%ENVIRONMENT REGOPE
+%INCLUDE klevccdf
+%INCLUDE klevkeys
+%INCLUDE klevkmsk
+
+CONST
+	cc_success = 0 -- Success status
+	cc_xyzwpr = 2 -- Position Register has an XYZWPR
+	cc_jntpos = 9 -- Position Register has a JOINTPOS
+
+VAR     --variables declaration with types
+	xyz : XYZWPR
+	my_posss :XYZWPREXT
+	jpos : JOINTPOS
+	file_var : FILE
+	tmp_int	 : INTEGER
+	tmp_str  : STRING[126]
+	entry	 : INTEGER
+
+	pos_type,
+	num_axes,
+	prog_index,
+	i_val,
+	STATUS : INTEGER
+	r_val :REAL
+	r_flg :BOOLEAN
+
+	loop1	 : BOOLEAN
+	loop2	 : BOOLEAN
+	cur_tim	: INTEGER
+	ary_tmp :ARRAY[6] OF STRING[10]
+	posext_data :XYZWPREXT
+
+BEGIN
+
+	WRITE(CHR(137),CHR(128)); -- Clear the TP USER menu screen
+	FORCE_SPMENU(TP_PANEL,SPI_TPUSER,1) -- Force the TP USER menu to be visible
+	
+	SET_INT_REG(2,0,STATUS)	--ustaw Reg[2] = 0
+	
+	
+	---------------------------------------------------------------------------------------------
+	WRITE('Getting Current Position',CR)
+	xyz = CURPOS(0,0) -- Get the current position
+	WRITE('Position = ',xyz, CR)
+	xyz.y = xyz.y + 10
+	jpos = xyz
+	--WRITE('Storing Jpos to PR[5]',CR)
+	SET_JPOS_REG(5 , jpos, STATUS)
+	
+	-- START MOVEMENT PROGRAM
+	WRITE('Starting program RUCH',CR)
+	CALL_PROGLIN('RUCH',1, prog_index, FALSE) --Execute PROG_1.TP
+	
+	--WRITE('Getting Value from R[2]',CR)
+	GET_REG(2, TRUE, i_val, r_val, STATUS)
+	WRITE('Register[2] = ',i_val, CR)
+	
+
+	---------------------------------------------------------------------------------------------------
+
+END A_RUCH
+

@@ -1,0 +1,25 @@
+					IF (status = cc_success) THEN -- Verify SET_POS_REG is successful
+						WRITE('Setting Integer Value to R[1]',cr)
+						SET_INT_REG(1, 1, status) -- Set the value 1 (second val) into R[1]
+					ENDIF
+
+					
+					-- CHECK IF PROGRAM WAS EXECUTED PROPERLY--
+					WRITE('Getting Value from R[2]',cr)
+					GET_REG(2,r_flg, i_val, r_val, status) --Get R[2] value
+					IF (status = cc_success) THEN --Verify GET_REG success
+						IF (r_flg) THEN --REAL value in register
+							WRITE('Got REAL value from R[2]',cr)
+							IF (r_val <> 1.0) THEN --Verify value set
+								WRITE ('PROG_1 failed to set R[2]',cr) -- by RUCH.tp
+							ENDIF
+						ELSE --Register contained an INTEGER
+							WRITE('Got INTEGER value from R[2]',cr)
+							IF (i_val <> 1) THEN --Verify value set by
+								WRITE ('PROG_1 failed to set R[2]',cr) --PROG_1.TP
+							ENDIF
+						ENDIF
+					ELSE --GET_REG was NOT successful
+						WRITE('GET_REG Failed',cr,' Status = ',status,cr)
+					ENDIF
+
