@@ -1,0 +1,119 @@
+PROGRAM A_KLI
+
+%STACKSIZE = 4000
+%NOLOCKGROUP
+%NOPAUSE=ERROR+COMMAND+TPENABLE
+%ENVIRONMENT uif
+%ENVIRONMENT sysdef
+%ENVIRONMENT kclop
+%ENVIRONMENT bynam
+%ENVIRONMENT fdev
+%ENVIRONMENT flbt
+%ENVIRONMENT STRNG
+%ENVIRONMENT TIM
+%ENVIRONMENT REGOPE --GET_REG
+%INCLUDE klevccdf
+%INCLUDE klevkeys
+%INCLUDE klevkmsk
+
+
+VAR     --variables declaration with types
+	file_var : FILE         --do utworzenia pliku przesylu   
+	tmp_str  : STRING[126]  --do wysylania stringa
+    xyz :XYZWPR     --przechowuje pozycje
+	entry,          --do ustawienia portu automatycznie
+    tmp_int,        --do licznika w petli
+    prg_indx,       --jesli chce wywolac program
+	i_val,          --do przypisania wartosci z rejestru
+	STATUS : INTEGER    --zmienna do statusow
+	r_val :REAL     --do przypisania wartosci z rejestru
+	r_flg :BOOLEAN  --flaga przypisywania wartosci z rejestru
+
+	loop1,          --uzywane do petli
+	loop2	 : BOOLEAN
+
+ROUTINE ustaw_screen
+BEGIN
+    WRITE(CHR(137),CHR(128)); -- Clear the TP USER menu screen
+	FORCE_SPMENU(TP_PANEL,SPI_TPUSER,1) -- Force the TP USER menu to be visible
+END ustaw_screen
+
+ROUTINE pos_string :STRING
+VAR
+    str_r: STRING[126]
+    ary_r :ARRAY[6] OF STRING[10]
+BEGIN
+	xyz = CURPOS(0,0) --pobranie obecnej pozycji
+	CNV_REAL_STR(xyz.x, 2, 3, ary_r[1])     --syntax(real input, length, num_digits, string target)
+	CNV_REAL_STR(xyz.y, 2, 3, ary_r[2])
+	CNV_REAL_STR(xyz.z, 2, 3, ary_r[3])
+	CNV_REAL_STR(xyz.w, 2, 3, ary_r[4])
+	CNV_REAL_STR(xyz.p, 2, 3, ary_r[5])
+	CNV_REAL_STR(xyz.r, 2, 3, ary_r[6])
+	str_r = ary_r[1] + ary_r[2] + ary_r[3] + ary_r[4] + ary_r[5] + ary_r[6] --sklejenie pozycji w stringa
+    RETURN(str_r)   --zwrocenie wartosci
+END pos_string
+
+ROUTINE STOREPOS (reg_id : INTEGER)
+
+BEGIN
+	xyz = CURPOS(0,0) -- Get the current position
+	SET_POS_REG(reg_id , xyz, STATUS)
+END STOREPOS
+
+-------------------------GLOWNA PETLA PROGRAMU------------------------------------------
+BEGIN
+	ustaw_screen
+	
+    SET_FILE_ATR(file_var, ATR_IA)  -- set attributes of file before its opened (file_id, atr_type, art value)
+	SET_VAR(entry, '*SYSTEM*','$HOSTC_CFG[1].$SERVER_PORT', 8000, STATUS) -- syntax : SET_VAR(entry, prog_name, var_name, value, status
+
+	-- Connect the tag
+    WRITE('Program is started.',CR)
+	MSG_CONNECT('C1:',STATUS)   -- Connect a client or server port. Status explains the status of the attempted operation. If it is not equal to 0, then an error occurred
+	WRITE('Connect status = ',STATUS,CR)
+
+	loop1 = TRUE
+		IF STATUS = 0 THEN
+			WHILE loop1 = TRUE DO
+				WRITE('Opening file...',CR)
+				OPEN FILE file_var('rw','C1:')  -- Syntax : OPEN FILE file_var ( usage_string, file_string). Tutaj otwarcie pliku oznacza komunikacje z serwerem i wysylanie/otrzymywanie komunikatow
+				STATUS = IO_STATUS(file_var)    -- Use the IO_STATUS built-in function to verify if the open file operation was successful
+				IF STATUS = 0 THEN
+					---------------------------------------------------------------------------------------------
+					---------------------------------------------------------------------------------------------
+					loop2 = TRUE
+					tmp_int = 0
+					WHILE loop2 = TRUE DO	--wyslanie pozycji 5 razy
+						STOREPOS(5)
+						tmp_str = pos_string    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
+						WRITE file_var(tmp_str ::126)
+						tmp_int = tmp_int+1
+						DELAY 50
+						IF tmp_int = 4 THEN
+							loop2 = FALSE
+						ENDIF
+					ENDWHILE
+
+
+					WRITE('Waiting to read from server...')
+					READ file_var(tmp_str::126)	--Odczytanie stringa zwrotnego (ostatni wyslany)
+					STATUS = IO_STATUS(file_var)
+					WRITE('Read status: ',STATUS,CR)
+					WRITE('Read: ',tmp_str,CR)
+					loop1 = FALSE
+
+					WRITE('Closed file.',CR)
+					CLOSE FILE file_var
+				ELSE
+					WRITE('Error opening file',CR)
+					loop1 = FALSE
+				ENDIF						
+			ENDWHILE
+		ENDIF
+	WRITE('Closed file.',CR)
+	CLOSE FILE file_var
+	MSG_DISCO('C1:',STATUS)
+	WRITE('Disconnect status=',STATUS,CR)
+END A_KLI
+
