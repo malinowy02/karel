@@ -1,4 +1,4 @@
-PROGRAM A_KLI
+PROGRAM A_COM
 
 %STACKSIZE = 4000
 %NOLOCKGROUP
@@ -18,7 +18,8 @@ PROGRAM A_KLI
 
 
 VAR     --variables declaration with types
-	file_var : FILE         --do utworzenia pliku przesylu   
+	file_var : FILE         --do utworzenia pliku przesylu  
+	new_str	: STRING[5]
 	tmp_str  : STRING[126]  --do wysylania stringa
     xyz :XYZWPR     --przechowuje pozycje
 	entry,          --do ustawienia portu automatycznie
@@ -82,24 +83,19 @@ BEGIN
 				IF STATUS = 0 THEN
 					loop2 = TRUE
 					tmp_int = 0
-					WHILE loop2 = TRUE DO	--wyslanie pozycji 5 razy
-						STOREPOS(5)	--zapisanie obecnej pozycji do rejestru PR[5]
+					WHILE loop2 = TRUE DO	--PETLA KOMUNIKACYJNA
 						tmp_str = pos_string    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
 						WRITE file_var(tmp_str ::126)
-						tmp_int = tmp_int+1
-						DELAY 50
-						IF tmp_int = 4 THEN
-							loop2 = FALSE
+						WRITE('Waiting to read from server...')
+						READ file_var(tmp_str::126)	--Odczytanie stringa zwrotnego
+						WRITE('Read: ',tmp_str,CR)
+						new_str= SUB_STR(tmp_str,1,1) --sprawdzenie pierwszej cyfry wiadomosci
+						ENDIF
+						IF new_str ='0' THEN
+							loop2=FALSE
 						ENDIF
 					ENDWHILE
-
-					WRITE('Waiting to read from server...')
-					READ file_var(tmp_str::126)	--Odczytanie stringa zwrotnego (ostatni wyslany)
-					STATUS = IO_STATUS(file_var)
-					WRITE('Read status: ',STATUS,CR)
-					WRITE('Read: ',tmp_str,CR)
 					loop1 = FALSE
-
 					WRITE('Closed file.',CR)
 					CLOSE FILE file_var
 				ELSE
@@ -110,5 +106,5 @@ BEGIN
 		ENDIF
 	MSG_DISCO('C1:',STATUS)
 	WRITE('Disconnect status=',STATUS,CR)
-END A_KLI
+END A_COM
 

@@ -24,16 +24,18 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         #Glowna petla programu
         while True:
             data=conn.recv(126)    #otrzymanie wiadomosci od Karela
-            print(repr(data))   #wypisanie otrzymanej wiadomosci   
-            #print("licznik:", licznik)
+            print(data)   #wypisanie otrzymanej wiadomosci
+            print('Dlugosc data:', len(data))
+
+            out_str=input("Enter message: ")      #wpisanie polecenia z klawiatury     
+            out_str=out_str + (126-len(out_str))*' '    #formatowanie wiadomosci do dlugosci jakiej oczekuje karel
+            out_byt=bytes(out_str,'utf-8')  #zakodowanie wiadomosci na bity
+            conn.send(out_byt)  #wiadomosc wysylana do Karela
+            if out_str[:1] == '0':        #gdy wpiszesz 0 zamknij serwer
+                break
+
             message = str(data) + '\n'  #formatowanie do pliku z nastepna linia
             f.write(message)
-            licznik+=1
-            if not data:        #gdy nic nie zostalo otrzymane, zamknij serwer
-                break
-            conn.sendall(data)  #wiadomosc Echo wysylana do Karela
-        t1 = time.time()
-        total = (t1-t0)/licznik*1000
-        print("czas:", total)   #czas wykonywania programu od momentu polaczenia
-        print("licznik:", licznik)    #ilosc otrzymanych paczek z danymi (6x wiecej niz wyslanych)
+
+        print("Zakonczono dzialanie serwera")
         f.close()

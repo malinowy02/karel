@@ -20,7 +20,7 @@ PROGRAM A_String
 VAR     --variables declaration with types
 	file_var : FILE         --do utworzenia pliku przesylu   
 	tmp_str  : STRING[126]  --do wysylania stringa
-	new_str : STRING
+	new_str : STRING[5]
     xyz :XYZWPR     --przechowuje pozycje
 	entry,          --do ustawienia portu automatycznie
     tmp_int,        --do licznika w petli
@@ -62,8 +62,9 @@ BEGIN
 	tmp_str = pos_string    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
 	WRITE ('Calosc: ', tmp_str ::126, CR)
 	WRITE ('Skrocone: ', tmp_str ::2, CR)
-	new_str=tmp_str::2
-	IF new_str = 2 THEN 
+	new_str= SUB_STR(tmp_str,2,1)
+	WRITE('nowy: ',new_str,CR)
+	IF new_str = '2' THEN 
 		WRITE('WARUNEK SPELNIONY',CR)
 	ELSE
 		WRITE('NIESPELNIONY',CR)
