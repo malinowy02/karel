@@ -69,6 +69,12 @@ def move(conn, **kwargs):
     out_str = "".join(target)
     out_bytes = bytes(out_str + (126-len(out_str)) * ' ', 'utf-8')
     conn.send(out_bytes)
+
+    data = conn.recv(126)       # 126 bajtów, bo tyle przesyła Karel
+    if int(data) == 1:
+        print('Pozycja osiagalna')
+    else:
+        print('Nieosiagalna pozycja')
     pass
 
 def decode_coords(coords: bytes, separator: str=" "):

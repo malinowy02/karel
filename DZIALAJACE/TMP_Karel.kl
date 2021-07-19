@@ -134,16 +134,6 @@ BEGIN
 							new_str= SUB_STR(tmp_str,1,4)
 							CNV_STR_INT(new_str, tmp_int)
 							pos_store(tmp_int, xyz)
-
-							--sprawdzenie osiagalnosci pozycji
-						
-							bool_tmp = IN_RANGE(xyz)
-							IF bool_tmp = TRUE THEN
-								WRITE('Pozycja osiagalna',CR)
-							ELSE
-								WRITE('Zla pozycja',CR)
-							ENDIF
-
 						ENDIF
 						
 						IF new_str='m' THEN	--RUCH ROBOTA
@@ -152,7 +142,21 @@ BEGIN
 							new_str= SUB_STR(tmp_str,1,4)
 							CNV_STR_INT(new_str, tmp_int)
 							SET_INT_REG(5, tmp_int, STATUS)	-- wpisz w rejestr R[5] numerek pozycji
-							CALL_PROGLIN('B_MOVE',1, prg_indx, FALSE) 	--Execute PROG.TP		
+
+						--sprawdzenie osiagalnosci pozycji
+							xyz = GET_POS_REG(tmp_int, STATUS)
+							bool_tmp = IN_RANGE(xyz)
+							IF bool_tmp = TRUE THEN
+								WRITE('Pozycja osiagalna',CR)
+								tmp_str = '1'
+								WRITE file_var(tmp_str ::126)
+								CALL_PROGLIN('B_MOVE',1, prg_indx, FALSE) 	--Execute PROG.TP	
+							ELSE
+								WRITE('Zla pozycja',CR)
+								tmp_str = '0'
+								WRITE file_var(tmp_str ::126)
+							ENDIF
+								
 						ENDIF
 						IF new_str='r' THEN
 							tmp_str = pos_string    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
