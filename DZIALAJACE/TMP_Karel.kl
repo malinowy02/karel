@@ -65,13 +65,16 @@ END pos_store
 ROUTINE pos_new (x,y,z,w,p,r :REAL) :XYZWPR
 VAR
 xyz_loc :XYZWPR
+xyz_cur :XYZWPR
 BEGIN
+	xyz_cur = CURPOS(0,0)
 	xyz_loc.x=x
 	xyz_loc.y=y
 	xyz_loc.z=z
 	xyz_loc.w=w
 	xyz_loc.p=p
 	xyz_loc.r=r
+	xyz_loc.config_data=xyz_cur.config_data
 	RETURN(xyz_loc)
 END pos_new
 
@@ -82,7 +85,7 @@ VAR
 	i_loc :INTEGER
 BEGIN
 	FOR i_loc=0 TO 5 DO
-		new_str=SUB_STR(in_s,1+i_loc*8,8)
+		new_str=SUB_STR(in_s,1+i_loc*9,8)
 		CNV_STR_REAL(new_str,r_val)
 		ar_l[i_loc+1]=r_val
 	ENDFOR

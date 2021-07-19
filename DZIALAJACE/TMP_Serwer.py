@@ -27,7 +27,7 @@ def writepos (conn, **kwargs):
     # ensure we don't exceed limits
     for value, limit, axis in zip(input_vals, AXES_LIMITS, INPUT_KEYS):
         _value = float(value)
-        if _value <= limit[0] or _value >= limit[1]:
+        if _value < limit[0] or _value > limit[1]:
             raise LimitsException(f"Axis {axis} value is out of range!")
 
     conn.send(bytes("p" + 125 * " ", encoding="utf-8"))
@@ -35,10 +35,12 @@ def writepos (conn, **kwargs):
     out_str = "".join([str(s) + (9 - len(str(s))) * ' ' for s in input_vals])
     out_bytes = bytes(out_str + (126-len(out_str)) * ' ', 'utf-8')
     conn.send(out_bytes)
+    print('sent: ',out_bytes)
     register=values["PR_in"]
     out_str = "".join(register)
     out_bytes = bytes(out_str + (126-len(out_str)) * ' ', 'utf-8')
     conn.send(out_bytes)
+    print('sent: ',out_bytes)
     pass
 
 def quit(conn, **kwargs):
