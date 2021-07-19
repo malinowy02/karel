@@ -5,7 +5,8 @@ import time
 import timeit
 import PySimpleGUI as sg
 
-# komentarz
+# komentarz tu se jest
+
 class LimitsException(Exception):
     pass
 
