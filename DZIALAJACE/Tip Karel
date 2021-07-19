@@ -1,0 +1,19 @@
+Yes but you need to add some stuff to your program.
+First, right after the PROGRAM ***** line, you need to add some attributes :
+
+%NOLOCKGROUP -- because the karel program won't use motion
+
+%NOABORT = ERROR + COMMAND -- ERROR will prevent the karel program from aborting 
+if any error occur and COMMAND will prevent the user from aborting the Karel program from the TP
+
+%NOPAUSE = ERROR + COMMAND + TPENABLE -- Same as %NOABORT, TPENABLE disable pause of the karel
+ program when the TP is turned on.
+
+
+
+Then you can add a master loop with a condition that is never satisfied to prevent your program from ending
+
+
+
+You can even add your program the the Cold and HOT start autoexec to run the program at startup
+ (i would recommend removing the COMMAND part from the %NOABORT attribute as you will need a way to move the robot once it reached the boundaries)
