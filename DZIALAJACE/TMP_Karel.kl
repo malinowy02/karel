@@ -30,6 +30,7 @@ VAR     --variables declaration with types
 	STATUS : INTEGER    --zmienna do statusow
 	r_val :REAL     --do przypisania wartosci z rejestru
 	r_flg :BOOLEAN  --flaga przypisywania wartosci z rejestru
+	bool_tmp :BOOLEAN
 
 	loop1,          --uzywane do petli
 	loop2	 : BOOLEAN
@@ -133,10 +134,20 @@ BEGIN
 							new_str= SUB_STR(tmp_str,1,4)
 							CNV_STR_INT(new_str, tmp_int)
 							pos_store(tmp_int, xyz)
+
+							--sprawdzenie osiagalnosci pozycji
+						
+							bool_tmp = IN_RANGE(xyz)
+							IF bool_tmp = TRUE THEN
+								WRITE('Pozycja osiagalna',CR)
+							ELSE
+								WRITE('Zla pozycja',CR)
+							ENDIF
+
 						ENDIF
 						
 						IF new_str='m' THEN	--RUCH ROBOTA
-							READ file_var(tmp_str::126)
+							READ file_var(tmp_str::126)	--odebranie docelowego PR[]
 							WRITE('Read: ',tmp_str,CR)
 							new_str= SUB_STR(tmp_str,1,4)
 							CNV_STR_INT(new_str, tmp_int)
