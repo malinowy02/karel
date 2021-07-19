@@ -1,15 +1,10 @@
-from os import access
+from os import access, write
 import socket
 import sys
 import time
 import timeit
 import PySimpleGUI as sg
 
-# SERVER CONFIGURATION
-server_address = ('',8000)
-HOST = '127.0.0.1'
-PORT = 8000
-message = ''
 
 class LimitsException(Exception):
     pass
@@ -19,10 +14,11 @@ class QuitException(Exception):
 
 INPUT_KEYS = ["X_in", "Y_in", "Z_in", "W_in", "P_in", "R_in"]
 AXES_LIMITS = [(-900, 900), (-900, 900), (-900, 900), (-180, 180), (-180, 180), (-180, 180)]
+PR_LIMITS = (1,100)
 
 
 # MAIN FUNCTIONALITIES
-def move(conn, **kwargs):
+def writepos (conn, **kwargs):
     
     # getting from kwargs
     values = kwargs.get("values", [0,0,0, 0, 0,0])
@@ -39,6 +35,10 @@ def move(conn, **kwargs):
     out_str = "".join([str(s) + (9 - len(str(s))) * ' ' for s in input_vals])
     out_bytes = bytes(out_str + (126-len(out_str)) * ' ', 'utf-8')
     conn.send(out_bytes)
+    register=values["PR_in"]
+    out_str = "".join(register)
+    out_bytes = bytes(out_str + (126-len(out_str)) * ' ', 'utf-8')
+    conn.send(out_bytes)
     pass
 
 def quit(conn, **kwargs):
@@ -49,6 +49,26 @@ def dummy(conn, **kwargs):
     print("Method not implemented yet!")
     pass
 
+def readpos(conn, **kwargs):
+    conn.send(bytes("r" + 125 * " ", encoding="utf-8"))
+    data = conn.recv(126)       # 126 bajtów, bo tyle przesyła Karel
+    print('received: ',data)
+    x,y,z,w,p,r = decode_coords(data)
+    window['X'].update(x)
+    window['Y'].update(y)
+    window['Z'].update(z)
+    window['W'].update(w)
+    window['P'].update(p)
+    window['R'].update(r)
+    pass
+
+def move(conn, **kwargs):
+    conn.send(bytes("m" + 125 * " ", encoding="utf-8"))
+    target=values["PR_go"]
+    out_str = "".join(target)
+    out_bytes = bytes(out_str + (126-len(out_str)) * ' ', 'utf-8')
+    conn.send(out_bytes)
+    pass
 
 def decode_coords(coords: bytes, separator: str=" "):
     """
@@ -59,7 +79,7 @@ def decode_coords(coords: bytes, separator: str=" "):
     return tuple(decoded_coords)
 
 # FUNCTIONS USED TO INVOKE BEHAVIOUR AFTER BUTTON CLICK IN GUI
-event_functions = {"Move": move, "Quit": quit, "Ok": dummy}
+event_functions = {"Write Pos": writepos, "Quit": quit, "Read CurPos": readpos, "Move":move}
 
 
 # LAYOUT
@@ -68,22 +88,25 @@ layout = [  [sg.Text('Obecna pozycja robota')],
             [sg.Text('X'), sg.Text(size=(40,1), key='X')],
             [sg.Text('Y'), sg.Text(size=(40,1), key='Y')],
             [sg.Text('Z'), sg.Text(size=(40,1), key='Z')],
-            [sg.Text('W'), sg.Text(size=(40,1), key='W')],
+            [sg.Text('W'), sg.Text(size=(40,1), key='W'),sg.Button('Read CurPos')],
             [sg.Text('P'), sg.Text(size=(40,1), key='P')],
             [sg.Text('R'), sg.Text(size=(40,1), key='R')],
             [sg.Text('Docelowa pozycja')],
             [sg.Text('X'), sg.Input(key="X_in")],
             [sg.Text('Y'), sg.Input(key="Y_in")],
-            [sg.Text('Z'), sg.Input(key="Z_in")],
-            [sg.Text('W'), sg.Input(key='W_in')],
+            [sg.Text('Z'), sg.Input(key="Z_in"), sg.Text('Wpisz w rejestr PR'), sg.Input(key="PR_in")],
+            [sg.Text('W'), sg.Input(key='W_in'), sg.Button("Write Pos")],
             [sg.Text('P'), sg.Input(key='P_in')],
             [sg.Text('R'), sg.Input(key='R_in')],
-            [sg.Checkbox('Checkbox', default=True, k='-CB-')],
-            [sg.Text('Enter something on Row 2'), sg.InputText()],
-            [sg.Button('Ok'), sg.Button('Quit'), sg.Button("Move")] 
+            [sg.Text('Ruch Robota'), sg.Text('Cel PR'), sg.Input(key="PR_go"), sg.Button("Move")],
+            [sg.Button('Quit')] 
             ]
 
-# Create the Window
+# SERVER CONFIGURATION
+server_address = ('',8000)
+HOST = '127.0.0.1'
+PORT = 8000
+message = ''
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
@@ -102,6 +125,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         # Odpal okienko
         window = sg.Window('Fanuc TCP', layout, finalize=True)
         
+        first=True
         # Glowna petla programu
         while True:
             
@@ -109,20 +133,22 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             data = conn.recv(126)       # 126 bajtów, bo tyle przesyła Karel
             x,y,z,w,p,r = decode_coords(data)
 
-            # Update GUI coordswindow['X_in'].update(x)
-            window['X'].update(x)
-            window['Y'].update(y)
-            window['Z'].update(z)
-            window['W'].update(w)
-            window['P'].update(p)
-            window['R'].update(r)
+            if first == True:
+                # Update GUI coordswindow['X_in'].update(x)
+                window['X'].update(x)
+                window['Y'].update(y)
+                window['Z'].update(z)
+                window['W'].update(w)
+                window['P'].update(p)
+                window['R'].update(r)
 
-            window['X_in'].update(x)
-            window['Y_in'].update(y)
-            window['Z_in'].update(z)
-            window['W_in'].update(w)
-            window['P_in'].update(p)
-            window['R_in'].update(r)
+                window['X_in'].update(x)
+                window['Y_in'].update(y)
+                window['Z_in'].update(z)
+                window['W_in'].update(w)
+                window['P_in'].update(p)
+                window['R_in'].update(r)
+                first=False
             
             event, values = window.read()
 

@@ -110,25 +110,41 @@ BEGIN
 				STATUS = IO_STATUS(file_var)    -- Use the IO_STATUS built-in function to verify if the open file operation was successful
 				IF STATUS = 0 THEN
 					loop2 = TRUE
-					tmp_int = 0
 					WHILE loop2 = TRUE DO	--PETLA KOMUNIKACYJNA
 						tmp_str = pos_string    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
 						WRITE file_var(tmp_str ::126)
 						WRITE('Waiting to read from server...')
 						READ file_var(tmp_str::126)	--Odczytanie stringa zwrotnego
 						WRITE('Read: ',tmp_str,CR)
-						new_str= SUB_STR(tmp_str,1,1) --sprawdzenie pierwszej cyfry wiadomosci
-						IF new_str ='0' THEN
+						new_str= SUB_STR(tmp_str,1,1) --sprawdzenie pierwszej litery/cyfry wiadomosci
+						
+						IF new_str ='0' THEN	--QUIT
 							loop2=FALSE
 						ENDIF
-						IF new_str='p' THEN
+						
+						IF new_str='p' THEN	--NOWA POZYCJA PR[ ]
 							READ file_var(tmp_str::126)
 							WRITE('Read: ',tmp_str,CR)
 							xyz=decode(tmp_str)
-							pos_store(3,xyz)
-
-
+							READ file_var(tmp_str::126)
+							new_str= SUB_STR(tmp_str,1,4)
+							CNV_STR_INT(new_str, tmp_int)
+							pos_store(tmp_int, xyz)
 						ENDIF
+						
+						IF new_str='m' THEN	--RUCH ROBOTA
+							READ file_var(tmp_str::126)
+							WRITE('Read: ',tmp_str,CR)
+							new_str= SUB_STR(tmp_str,1,4)
+							CNV_STR_INT(new_str, tmp_int)
+							SET_INT_REG(5, tmp_int, STATUS)	-- wpisz w rejestr R[5] numerek pozycji
+							CALL_PROGLIN('B_MOVE',1, prg_indx, FALSE) 	--Execute PROG.TP		
+						ENDIF
+						IF new_str='r' THEN
+							tmp_str = pos_string    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
+							WRITE file_var(tmp_str ::126)
+						ENDIF
+						
 					ENDWHILE
 					loop1 = FALSE
 					WRITE('Closed file.',CR)
