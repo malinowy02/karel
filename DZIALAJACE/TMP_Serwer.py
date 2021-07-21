@@ -2,8 +2,8 @@ from os import access, write
 import socket
 import sys
 import time
-import timeit
 import PySimpleGUI as sg
+from PySimpleGUI.PySimpleGUI import B
 
 class LimitsException(Exception):
     pass
@@ -26,7 +26,6 @@ def writepos (conn, **kwargs):
     input_vals = [values[k] for k in INPUT_KEYS]
 
     register=values["PR_in"]
-    print(f'Wartosc rejestru {register}')
     if register.isnumeric():
         # ensure we don't exceed limits
         for value, limit, axis in zip(input_vals, AXES_LIMITS, INPUT_KEYS):
@@ -69,35 +68,41 @@ def readpos(conn, **kwargs):
     pass
 
 def readpr(conn, **kwargs):
-    conn.send(bytes("e" + 125 * " ", encoding="utf-8"))
     register=values["PR_read"]
-    out_str = "".join(register)
-    conn.send(bytes(out_str + (126-len(out_str)) * ' ', 'utf-8'))
-    data = conn.recv(126)       # 126 bajtów, bo tyle przesyła Karel
-    x,y,z,w,p,r = decode_coords(data)
-    window['X'].update(x)
-    window['Y'].update(y)
-    window['Z'].update(z)
-    window['W'].update(w)
-    window['P'].update(p)
-    window['R'].update(r)
-    pass
+    if register.isnumeric():
+        conn.send(bytes("e" + 125 * " ", encoding="utf-8"))
+        register=values["PR_read"]
+        out_str = "".join(register)
+        conn.send(bytes(out_str + (126-len(out_str)) * ' ', 'utf-8'))
+        data = conn.recv(126)       # 126 bajtów, bo tyle przesyła Karel
+        x,y,z,w,p,r = decode_coords(data)
+        window['X'].update(x)
+        window['Y'].update(y)
+        window['Z'].update(z)
+        window['W'].update(w)
+        window['P'].update(p)
+        window['R'].update(r)
+        pass
+    raise BadFormatException
 
 def move(conn, **kwargs):
-    conn.send(bytes("m" + 125 * " ", encoding="utf-8"))
-    target=values["PR_go"]
-    out_str = "".join(target)
-    out_bytes = bytes(out_str + (126-len(out_str)) * ' ', 'utf-8')
-    conn.send(out_bytes)
+    register=values["PR_go"]
+    if register.isnumeric():
+        conn.send(bytes("m" + 125 * " ", encoding="utf-8"))
+        target=values["PR_go"]
+        out_str = "".join(target)
+        out_bytes = bytes(out_str + (126-len(out_str)) * ' ', 'utf-8')
+        conn.send(out_bytes)
 
-    data = conn.recv(126)       # 126 bajtów, bo tyle przesyła Karel
-    if int(data) == 1:
-        print('Pozycja osiagalna')
-        window['War'].update('')
-    else:
-        print('Nieosiagalna pozycja')
-        window['War'].update('Nieosiagalna pozycja!')
-    pass
+        data = conn.recv(126)       # 126 bajtów, bo tyle przesyła Karel
+        if int(data) == 1:
+            print('Pozycja osiagalna')
+            window['War'].update('')
+        else:
+            print('Nieosiagalna pozycja')
+            window['War'].update('Nieosiagalna pozycja!')
+        pass
+    raise BadFormatException
 
 def decode_coords(coords: bytes, separator: str=" "):
     """
