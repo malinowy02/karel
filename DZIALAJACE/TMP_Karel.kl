@@ -42,7 +42,7 @@ BEGIN
 	FORCE_SPMENU(TP_PANEL,SPI_TPUSER,1) -- Force the TP USER menu to be visible
 END ustaw_screen
 
-ROUTINE pos_string :STRING
+ROUTINE pos_str :STRING
 VAR
     str_r: STRING[126]
     ary_r :ARRAY[6] OF STRING[10]
@@ -56,7 +56,23 @@ BEGIN
 	CNV_REAL_STR(xyz.r, 2, 3, ary_r[6])
 	str_r = ary_r[1] + ary_r[2] + ary_r[3] + ary_r[4] + ary_r[5] + ary_r[6] --sklejenie pozycji w stringa
     RETURN(str_r)   --zwrocenie wartosci
-END pos_string
+END pos_str
+
+ROUTINE reg_pos_str (reg_id : INTEGER) :STRING
+VAR
+    str_r: STRING[126]
+    ary_r :ARRAY[6] OF STRING[10]
+BEGIN
+	xyz = GET_POS_REG(reg_id, STATUS)
+	CNV_REAL_STR(xyz.x, 2, 3, ary_r[1])     --syntax(real input, length, num_digits, string target)
+	CNV_REAL_STR(xyz.y, 2, 3, ary_r[2])
+	CNV_REAL_STR(xyz.z, 2, 3, ary_r[3])
+	CNV_REAL_STR(xyz.w, 2, 3, ary_r[4])
+	CNV_REAL_STR(xyz.p, 2, 3, ary_r[5])
+	CNV_REAL_STR(xyz.r, 2, 3, ary_r[6])
+	str_r = ary_r[1] + ary_r[2] + ary_r[3] + ary_r[4] + ary_r[5] + ary_r[6] --sklejenie pozycji w stringa
+    RETURN(str_r)   --zwrocenie wartosci
+END reg_pos_str
 
 ROUTINE pos_store (reg_id : INTEGER; xyz3_loc: XYZWPR)
 BEGIN
@@ -115,7 +131,7 @@ BEGIN
 				IF STATUS = 0 THEN
 					loop2 = TRUE
 					WHILE loop2 = TRUE DO	--PETLA KOMUNIKACYJNA
-						tmp_str = pos_string    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
+						tmp_str = pos_str    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
 						WRITE file_var(tmp_str ::126)
 						WRITE('Waiting to read from server...')
 						READ file_var(tmp_str::126)	--Odczytanie stringa zwrotnego
@@ -159,7 +175,15 @@ BEGIN
 								
 						ENDIF
 						IF new_str='r' THEN
-							tmp_str = pos_string    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
+							tmp_str = pos_str    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
+							WRITE file_var(tmp_str ::126)
+						ENDIF
+						IF new_str='e' THEN
+							READ file_var(tmp_str::126)	--odebranie numeru PR[]
+							WRITE('Read: ',tmp_str,CR)
+							new_str= SUB_STR(tmp_str,1,4)
+							CNV_STR_INT(new_str, tmp_int)
+							tmp_str = reg_pos_str(tmp_int)    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
 							WRITE file_var(tmp_str ::126)
 						ENDIF
 						
