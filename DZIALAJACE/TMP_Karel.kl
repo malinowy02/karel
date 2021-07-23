@@ -130,9 +130,9 @@ BEGIN
 				STATUS = IO_STATUS(file_var)    -- Use the IO_STATUS built-in function to verify if the open file operation was successful
 				IF STATUS = 0 THEN
 					loop2 = TRUE
+					tmp_str = pos_str    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
+					WRITE file_var(tmp_str ::126)
 					WHILE loop2 = TRUE DO	--PETLA KOMUNIKACYJNA
-						tmp_str = pos_str    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
-						WRITE file_var(tmp_str ::126)
 						WRITE('Waiting to read from server...')
 						READ file_var(tmp_str::126)	--Odczytanie stringa zwrotnego
 						WRITE('Read: ',tmp_str,CR)
@@ -152,7 +152,7 @@ BEGIN
 							pos_store(tmp_int, xyz)
 						ENDIF
 						
-						IF new_str='m' THEN	--RUCH ROBOTA
+						IF new_str='m' THEN	--RUCH ROBOTA DO PR[]
 							READ file_var(tmp_str::126)	--odebranie docelowego PR[]
 							WRITE('Read: ',tmp_str,CR)
 							new_str= SUB_STR(tmp_str,1,4)
@@ -174,11 +174,11 @@ BEGIN
 							ENDIF
 								
 						ENDIF
-						IF new_str='r' THEN
+						IF new_str='r' THEN	--WCZYTANIE OBECNEJ POZYCJI
 							tmp_str = pos_str    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
 							WRITE file_var(tmp_str ::126)
 						ENDIF
-						IF new_str='e' THEN
+						IF new_str='e' THEN	--WCZYTANIE POZYCJI PR[]
 							READ file_var(tmp_str::126)	--odebranie numeru PR[]
 							WRITE('Read: ',tmp_str,CR)
 							new_str= SUB_STR(tmp_str,1,4)
