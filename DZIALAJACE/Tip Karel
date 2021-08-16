@@ -17,3 +17,26 @@ Then you can add a master loop with a condition that is never satisfied to preve
 
 You can even add your program the the Cold and HOT start autoexec to run the program at startup
  (i would recommend removing the COMMAND part from the %NOABORT attribute as you will need a way to move the robot once it reached the boundaries)
+
+
+
+TU CZESC ODNOSZACA SIE DO POPRAWNEGO PRZESYLANIA DANYCH POZYCYJNYCH
+
+
+ ROUTINE IF_GetCurPos (iTool : INTEGER) : XYZWPREXT
+BEGIN
+-------------CURRENT USER FRAME-------------
+	--$GROUP[1].$UFRAME = $MNUFRAME[1,$MNUFRAMENUM[1]]
+	--$GROUP[1].$UTOOL = $MOR_GRP[1].$NILPOS
+	--$GROUP[1].$UTOOL = $MNUTOOL[1,$MNUTOOLNUM[1]]
+	--$GROUP[1].$UTOOL = $MOR_GRP[1].$NILPOS
+ 
+	IF iTool < 1 THEN	
+		$GROUP[1].$UTOOL = $MNUTOOL[1,$MNUTOOLNUM[1]]
+	ELSE
+		IF iTool >=1 THEN
+			$GROUP[1].$UTOOL = $MNUTOOL[1 , iTool]
+		ENDIF
+	ENDIF
+	
+	RETURN (CURPOS(0,0) )

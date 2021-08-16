@@ -127,7 +127,7 @@ layout = [  [sg.Text('Obecna pozycja robota')],
             [sg.Text('Z'), sg.Text(size=(40,1), key='Z')],
             [sg.Text('W'), sg.Text(size=(40,1), key='W')],
             [sg.Text('P'), sg.Text(size=(40,1), key='P'), sg.Text('Wczytaj PR'), sg.Input(key="PR_read")],
-            [sg.Text('R'), sg.Text(size=(40,1), key='R'), sg.Button("Read PR"), sg.Text('(nie dziala na niezainicjowane')],
+            [sg.Text('R'), sg.Text(size=(40,1), key='R'), sg.Button("Read PR"), sg.Text('(nie dziala na niezainicjowane)')],
             [sg.Text('Docelowa pozycja')],
             [sg.Text('X'), sg.Input(key="X_in")],
             [sg.Text('Y'), sg.Input(key="Y_in")],
@@ -156,8 +156,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     
     with conn:
         print("Connection from ", c_addr)
-        t0 = time.time()
-        licznik = 0
         f = open("dane.txt", "w")   #tworzy nowy plik lub nadpisuje
 
         # Odpal okienko
@@ -173,6 +171,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             x,y,z,w,p,r = decode_coords(data)
 
             if first == True:
+                # Otrzymywanie koordynatów            
+                data = conn.recv(126)       # 126 bajtów, bo tyle przesyła Karel
+                print('Odebralem: ', data)
+                x,y,z,w,p,r = decode_coords(data)
                 # Update GUI coordswindow['X_in'].update(x)
                 window['X'].update(x)
                 window['Y'].update(y)
@@ -192,7 +194,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 window['PR_go'].update('1')
                 window['PR_read'].update('1')
                 first=False
-            
             event, values = window.read()
 
             try:
