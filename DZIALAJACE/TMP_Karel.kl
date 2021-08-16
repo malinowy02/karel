@@ -133,7 +133,8 @@ BEGIN
 					WHILE loop2 = TRUE DO	--PETLA KOMUNIKACYJNA
 						tmp_str = pos_str    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
 						WRITE file_var(tmp_str ::126)
-						WRITE('Waiting to read from server...')
+						WRITE('SENT: ',tmp_str,CR)
+						WRITE('Waiting to read from server...', CR)
 						READ file_var(tmp_str::126)	--Odczytanie stringa zwrotnego
 						WRITE('Read: ',tmp_str,CR)
 						new_str= SUB_STR(tmp_str,1,1) --sprawdzenie pierwszej litery/cyfry wiadomosci
@@ -166,17 +167,20 @@ BEGIN
 								WRITE('Pozycja osiagalna',CR)
 								tmp_str = '1'
 								WRITE file_var(tmp_str ::126)
+								WRITE('SENT: ',tmp_str,CR)
 								CALL_PROGLIN('B_MOVE',1, prg_indx, FALSE) 	--Execute PROG.TP	
 							ELSE
 								WRITE('Zla pozycja',CR)
 								tmp_str = '0'
 								WRITE file_var(tmp_str ::126)
+								WRITE('SENT: ',tmp_str,CR)
 							ENDIF
 								
 						ENDIF
 						IF new_str='r' THEN
 							tmp_str = pos_str    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
 							WRITE file_var(tmp_str ::126)
+							WRITE('SENT: ',tmp_str,CR)
 						ENDIF
 						IF new_str='e' THEN
 							READ file_var(tmp_str::126)	--odebranie numeru PR[]
@@ -185,6 +189,7 @@ BEGIN
 							CNV_STR_INT(new_str, tmp_int)
 							tmp_str = reg_pos_str(tmp_int)    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
 							WRITE file_var(tmp_str ::126)
+							WRITE('SENT: ',tmp_str,CR)
 						ENDIF
 						
 					ENDWHILE

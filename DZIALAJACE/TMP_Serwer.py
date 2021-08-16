@@ -93,14 +93,17 @@ def move(conn, **kwargs):
         out_str = "".join(target)
         out_bytes = bytes(out_str + (126-len(out_str)) * ' ', 'utf-8')
         conn.send(out_bytes)
+        print('sent: ',out_bytes)
 
         data = conn.recv(126)       # 126 bajtów, bo tyle przesyła Karel
+        print('recv: ',data)
         if int(data) == 1:
             print('Pozycja osiagalna')
             window['War'].update('')
         else:
             print('Nieosiagalna pozycja')
             window['War'].update('Nieosiagalna pozycja!')
+        print('Pozycja osiagnieta')
         pass
     raise BadFormatException
 
@@ -166,6 +169,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             
             # Otrzymywanie koordynatów            
             data = conn.recv(126)       # 126 bajtów, bo tyle przesyła Karel
+            print('recv: ',data)
             x,y,z,w,p,r = decode_coords(data)
 
             if first == True:
@@ -202,9 +206,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             except LimitsException as e:
                 print(e)
                 conn.send(bytes(126 * ' ', encoding="utf-8"))
+                data = conn.recv(126)       # jak tego nie bylo to sie zle przesylaly dane
             except BadFormatException as e:
                 print(e)
                 conn.send(bytes(126 * ' ', encoding="utf-8"))
+                data = conn.recv(126)       # jak tego nie bylo to sie zle przesylaly dane
 
         print("Zakonczono dzialanie serwera")
         f.close()
