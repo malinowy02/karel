@@ -57,7 +57,7 @@ def dummy(conn, **kwargs):
 
 def readpos(conn, **kwargs):
     conn.send(bytes("r" + 125 * " ", encoding="utf-8"))
-    data = conn.recv(126)       # 126 bajtów, bo tyle przesyła Karel
+    data = conn.recv(126)       # 126 bajtow, bo tyle przesyla Karel
     x,y,z,w,p,r = decode_coords(data)
     window['X'].update(x)
     window['Y'].update(y)
@@ -74,7 +74,7 @@ def readpr(conn, **kwargs):
         register=values["PR_read"]
         out_str = "".join(register)
         conn.send(bytes(out_str + (126-len(out_str)) * ' ', 'utf-8'))
-        data = conn.recv(126)       # 126 bajtów, bo tyle przesyła Karel
+        data = conn.recv(126)       # 126 bajtow, bo tyle przesyla Karel
         x,y,z,w,p,r = decode_coords(data)
         window['X'].update(x)
         window['Y'].update(y)
@@ -93,7 +93,7 @@ def move(conn, **kwargs):
         out_str = "".join(target)
         out_bytes = bytes(out_str + (126-len(out_str)) * ' ', 'utf-8')
         conn.send(out_bytes)
-        data = conn.recv(126)       # 126 bajtów, bo tyle przesyła Karel
+        data = conn.recv(126)       # 126 bajtow, bo tyle przesyla Karel
         if int(data) == 1:
             print('Pozycja osiagalna')
             window['War'].update('')
@@ -162,8 +162,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         while True:
             
             if first == True:
-                # Otrzymywanie koordynatów            
-                data = conn.recv(126)       # 126 bajtów, bo tyle przesyła Karel
+                # Otrzymywanie koordynatow            
+                data = conn.recv(126)       # 126 bajtow, bo tyle przesyla Karel
                 print('Odebralem: ', data)
                 x,y,z,w,p,r = decode_coords(data)
                 # Update GUI coordswindow['X_in'].update(x)
