@@ -3,7 +3,6 @@ import socket
 import sys
 import time
 import PySimpleGUI as sg
-from PySimpleGUI.PySimpleGUI import B
 
 class LimitsException(Exception):
     pass
@@ -138,9 +137,6 @@ layout = [  [sg.Text('Obecna pozycja robota')],
 
 # SERVER CONFIGURATION
 server_address = ('',8000)
-HOST = '127.0.0.1'
-PORT = 8000
-message = ''
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
@@ -188,7 +184,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             event, values = window.read()
 
             try:
-                # print(f'Event: {str(event)}') #wypisanie jaki event wystapil
+                print(f'Event: {str(event)}') #wypisanie jaki event wystapil
                 event_functions[str(event)](conn, values=values)
             
             except QuitException as e:
