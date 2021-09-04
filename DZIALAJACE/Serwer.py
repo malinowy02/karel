@@ -3,6 +3,7 @@ import socket
 import sys
 import time
 import PySimpleGUI as sg
+from PySimpleGUI.PySimpleGUI import Input
 
 class LimitsException(Exception):
     pass
@@ -109,8 +110,22 @@ def decode_coords(coords: bytes, separator: str=" "):
 
     return tuple(decoded_coords)
 
+def readnow(conn, f, **kwargs):
+    for i in range(values['n']):
+        conn.send(bytes("r" + 125 * " ", encoding="utf-8"))
+        data = conn.recv(126)       # 126 bajtow, bo tyle przesyla Karel
+        x,y,z,w,p,r = decode_coords(data)
+        window['X'].update(x)
+        window['Y'].update(y)
+        window['Z'].update(z)
+        window['W'].update(w)
+        window['P'].update(p)
+        window['R'].update(r)
+        f.write(values['X'])
+    pass
+
 # FUNCTIONS USED TO INVOKE BEHAVIOUR AFTER BUTTON CLICK IN GUI
-event_functions = {"Write Pos": writepos, "Quit": quit, "None":quit, "Read CurPos": readpos, "Read PR":readpr, "Move":move, "Dummy":dummy}
+event_functions = {"ReadNow":readnow, "Write Pos": writepos, "Quit": quit, "None":quit, "Read CurPos": readpos, "Read PR":readpr, "Move":move, "Dummy":dummy}
 
 # LAYOUT
 sg.theme('DarkAmber')
@@ -130,7 +145,9 @@ layout = [  [sg.Text('Obecna pozycja robota')],
             [sg.Text('R'), sg.Input(key='R_in')],
             [sg.Text('Ruch Robota'), sg.Text('Cel PR'), sg.Input(key="PR_go"), sg.Button("Move")],
             [sg.Button('Quit'), sg.Text('Warnings: '), sg.Text(size=(40,1), key='War')],
-            [sg.Button('Dummy')]
+            [sg.Button('Dummy')],
+            [sg.Text('n = '), sg.Input(key='n'),sg.Button('ReadNow')],
+            [sg.Text('Delay = '), sg.Input(key='dly')]
             ]
 
 # SERVER CONFIGURATION
