@@ -175,7 +175,7 @@ BEGIN
 								
 						ENDIF
 						IF new_str='r' THEN	--WCZYTANIE OBECNEJ POZYCJI
-							tmp_str = pos_str    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
+							tmp_str = pos_str    --uzycie ROUTINE do pobrania obecnej lokalizacji i sformatowania jej na string
 							WRITE file_var(tmp_str ::126)
 						ENDIF
 						IF new_str='e' THEN	--WCZYTANIE POZYCJI PR[]
@@ -183,7 +183,7 @@ BEGIN
 							WRITE('Read: ',tmp_str,CR)
 							new_str= SUB_STR(tmp_str,1,4)
 							CNV_STR_INT(new_str, tmp_int)
-							tmp_str = reg_pos_str(tmp_int)    --uzycie ROUTINE do pobrania obecnej lokalizacji i zrobienia jej na string
+							tmp_str = reg_pos_str(tmp_int)    --uzycie ROUTINE do pobrania obecnej lokalizacji z rejestru PR i sformatowania na string
 							WRITE file_var(tmp_str ::126)
 						ENDIF
 						

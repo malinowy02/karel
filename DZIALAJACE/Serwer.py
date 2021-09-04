@@ -17,14 +17,13 @@ INPUT_KEYS = ["X_in", "Y_in", "Z_in", "W_in", "P_in", "R_in"]
 AXES_LIMITS = [(-900, 900), (-900, 900), (-900, 900), (-180, 180), (-180, 180), (-180, 180)]
 PR_LIMITS = (1,100)
 
-
 # MAIN FUNCTIONALITIES
 def writepos (conn, **kwargs):
     # getting from kwargs
     values = kwargs.get("values", [0,0,0, 0, 0,0])
     input_vals = [values[k] for k in INPUT_KEYS]
 
-    register=values["PR_in"]
+    register = values["PR_in"]
     if register.isnumeric():
         # ensure we don't exceed limits
         for value, limit, axis in zip(input_vals, AXES_LIMITS, INPUT_KEYS):
@@ -112,7 +111,6 @@ def decode_coords(coords: bytes, separator: str=" "):
 
 # FUNCTIONS USED TO INVOKE BEHAVIOUR AFTER BUTTON CLICK IN GUI
 event_functions = {"Write Pos": writepos, "Quit": quit, "None":quit, "Read CurPos": readpos, "Read PR":readpr, "Move":move, "Dummy":dummy}
-
 
 # LAYOUT
 sg.theme('DarkAmber')
