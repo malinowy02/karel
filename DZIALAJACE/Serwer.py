@@ -110,9 +110,16 @@ def decode_coords(coords: bytes, separator: str=" "):
 
     return tuple(decoded_coords)
 
-def readnow(conn, f, **kwargs):
-    for i in range(values['n']):
-        conn.send(bytes("r" + 125 * " ", encoding="utf-8"))
+READ_KEYS = ["X", "Y", "Z", "W", "P", "R"]
+
+def readnow(conn, **kwargs):
+    f = open("otrzymano.txt", "a")  #dopisz linie do istniejącego pliku
+    t0 = time.time()
+    for i in range(int(values['n'])):
+        dly=values['dly']
+        out_str='t' + dly
+        out_bytes = bytes(out_str + (126-len(out_str)) * ' ', 'utf-8')
+        conn.send(out_bytes)
         data = conn.recv(126)       # 126 bajtow, bo tyle przesyla Karel
         x,y,z,w,p,r = decode_coords(data)
         window['X'].update(x)
@@ -121,7 +128,12 @@ def readnow(conn, f, **kwargs):
         window['W'].update(w)
         window['P'].update(p)
         window['R'].update(r)
-        f.write(values['X'])
+    t1 = time.time()
+    total = (t1-t0)/int(values['n'])*1000
+    okres = str(total) +'\n'
+    f.write('n = ' + values['n'] +'\n')
+    f.write('dly = ' + values['dly'] +'\n')
+    f.write('Rzeczywisty [ms] = ' + okres)
     pass
 
 # FUNCTIONS USED TO INVOKE BEHAVIOUR AFTER BUTTON CLICK IN GUI

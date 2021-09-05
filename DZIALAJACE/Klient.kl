@@ -178,6 +178,16 @@ BEGIN
 							tmp_str = pos_str    --uzycie ROUTINE do pobrania obecnej lokalizacji i sformatowania jej na string
 							WRITE file_var(tmp_str ::126)
 						ENDIF
+
+						IF new_str='t' THEN	--WCZYTANIE OBECNEJ POZYCJI
+							new_str = SUB_STR(tmp_str,2,4)
+							CNV_STR_INT(new_str, tmp_int)
+							tmp_str = pos_str    --uzycie ROUTINE do pobrania obecnej lokalizacji i sformatowania jej na string
+							DELAY tmp_int
+							WRITE file_var(tmp_str ::126)
+							
+						ENDIF
+
 						IF new_str='e' THEN	--WCZYTANIE POZYCJI PR[]
 							READ file_var(tmp_str::126)	--odebranie numeru PR[]
 							WRITE('Read: ',tmp_str,CR)
