@@ -131,7 +131,7 @@ def readnow(conn, **kwargs):
     t1 = time.time()
     total = (t1-t0)/int(values['n'])*1000
     okres = str(total) +'\n'
-    f.write('n =' + values['n'] +'; ')
+    f.write('n=' + values['n'] +'; ')
     f.write('dly=' + values['dly'] +'; ')
     f.write('Time=' + okres)
     pass
