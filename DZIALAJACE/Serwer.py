@@ -131,9 +131,9 @@ def readnow(conn, **kwargs):
     t1 = time.time()
     total = (t1-t0)/int(values['n'])*1000
     okres = str(total) +'\n'
-    f.write('n = ' + values['n'] +'\n')
-    f.write('dly = ' + values['dly'] +'\n')
-    f.write('Rzeczywisty [ms] = ' + okres)
+    f.write('n =' + values['n'] +'; ')
+    f.write('dly=' + values['dly'] +'; ')
+    f.write('Time=' + okres)
     pass
 
 # FUNCTIONS USED TO INVOKE BEHAVIOUR AFTER BUTTON CLICK IN GUI
