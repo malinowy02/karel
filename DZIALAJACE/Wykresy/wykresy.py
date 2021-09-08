@@ -18,7 +18,6 @@ def dane(file):
         y.append(float(data[i][1]))
     return x,y
 
-
 f = open('PomiarPC.txt', 'r')
 fm = open('PomiarMAC.txt', 'r')
 
@@ -30,10 +29,28 @@ m.style.use('seaborn')
 m.plot(x, y, 'ko', label='Pomiary na jednym komputerze')
 m.plot(xm, ym, 'r^', label='Pomiary na dwóch komputerach')
 m.plot(x, x, label = 'Wartość teoretyczna')
-
-m.xlabel('Okres teoretyczny [ms]')
-m.ylabel('Okres rzeczywisty [ms]')
+m.suptitle('Wykres okresu w komunikacji symulowanej', fontsize=14)
+m.xlabel('Ustawiony okres [ms]', fontsize=14)
+m.ylabel('Okres rzeczywisty [ms]', fontsize=14)
 m.legend()
+m.show()
+
+
+
+fr = open('PomiarROB.txt', 'r')
+
+xr,yr = dane(fr)
+
+m.figure(2)
+m.style.use('seaborn')
+m.plot(xr, yr, 'g^', label='Pomiary rzeczywisty robot - mac')
+m.plot(x, y, 'ko', label='Pomiary na jednym komputerze')
+m.plot(xm, ym, 'r^', label='Pomiary na dwóch komputerach')
+m.plot(x, x, label = 'Wartość teoretyczna')
+m.suptitle('Wykres zestawiający badania okresu', fontsize=14)
+m.xlabel('Ustawiony okres [ms]', fontsize=14)
+m.ylabel('Okres rzeczywisty [ms]',fontsize=14)
+m.legend(fontsize=12)
 m.show()
 
 
