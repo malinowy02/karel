@@ -140,7 +140,7 @@ def readnow(conn, **kwargs):
 event_functions = {"ReadNow":readnow, "Write Pos": writepos, "Quit": quit, "None":quit, "Read CurPos": readpos, "Read PR":readpr, "Move":move, "Dummy":dummy}
 
 # LAYOUT
-sg.theme('DarkAmber')
+sg.theme('Default')
 layout = [  [sg.Text('Obecna pozycja robota')],
             [sg.Text('X'), sg.Text(size=(40,1), key='X')],
             [sg.Text('Y'), sg.Text(size=(40,1), key='Y'), sg.Button('Read CurPos')],
